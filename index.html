@@ -84,6 +84,12 @@ h1{font-family:'Oswald',sans-serif;text-transform:uppercase;letter-spacing:.02em
 .year-legend{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:10px;font-size:11px;color:var(--muted)}
 .year-legend .ycell{width:10px;height:10px;display:inline-block;border-radius:2px}
 .year-toggle{width:100%;background:none;border:none;color:var(--accent);font-family:'Oswald',sans-serif;font-weight:600;font-size:13px;letter-spacing:.03em;text-align:left;cursor:pointer;padding:0;margin-bottom:10px}
+.dayoverride{display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-bottom:14px;flex-wrap:wrap}
+.dayoverride-q{font-size:12.5px;color:var(--fg);flex:1;min-width:180px}
+.dayoverride-btns{display:flex;gap:6px;flex:none}
+.ov-btn{background:var(--bg);border:1px solid var(--border);color:var(--muted);border-radius:7px;font-family:'Oswald',sans-serif;font-weight:600;font-size:11px;padding:6px 12px;cursor:pointer}
+.ov-btn.active-yes{background:var(--success);border-color:var(--success);color:#fff}
+.ov-btn.active-no{background:#E5484D;border-color:#E5484D;color:#fff}
 .sync-toggle{width:100%;background:none;border:none;color:var(--accent);font-family:'Oswald',sans-serif;font-weight:600;font-size:13px;letter-spacing:.03em;text-align:left;cursor:pointer;padding:0}
 .sync-body{padding-top:12px;display:flex;flex-direction:column;gap:10px}
 .sync-hint{font-size:12px;color:var(--muted);line-height:1.4}
@@ -144,29 +150,25 @@ var VIDEOS = {
   hip_rotation_standing: {title:'Boxing Hip Turn Drill (verificar forma)', id:'dFM4a4F9jH4'},
   balance_lateral: {title:'Equilibrio en una pierna con alcance', id:'TJ6TgSFQmeo'},
   shadow_fundamentals: {title:'Shadow Boxing rápido — Tony Jeffries', id:'J4j3AOVWuHE'},
-  sandbag_clean_press: {title:'Sandbag clean & press — Ultimate Sandbag Training', id:'Bi1RWaoqW4w'},
-  bear_hug_carry: {title:'Sandbag Bear Hug Carry — OPEX', id:'hBu76e72MHw'},
-  sandbag_getup: {title:'Sandbag Shoulder Get-up — Josh Henkin (DVRT)', id:'U_cvXXtyz5o'},
-  sandbag_squat_throw: {title:'Sandbag squat-to-shoulder — Ultimate Sandbag Training', id:'rbY3SZs-t8E'},
   farmer_carry: {title:'Farmer\'s Carry — Steve Slater', id:'vi4X2iSOyiA'},
   hip_90_90: {title:'90/90 Hip Mobility', id:'HUZimFZJZWU'},
-  shoulder_er_band: {title:'Salud de hombro — ATHLEAN-X', id:'ssH35JwmwTM'},
+  shoulder_er_band: {title:'Rotador externo con mini banda — Muscle & Motion', id:'lw5jkvrLwVw'},
   neck_bridge: {title:'Puente de cuello — progresión segura (Movement Upgraded)', id:'SmYEnIGWzdk'},
-  back_squat: {title:'Sentadilla — ATHLEAN-X', id:'nEQQle9-0NA'},
-  rdl: {title:'Peso muerto rumano — Jeff Nippard', id:'_oyxCn2iSjU'},
+  back_squat: {title:'Sentadilla con barra — Max Euceda', id:'aOzrA4FgnM0'},
+  rdl: {title:'Peso muerto rumano — Max Euceda', id:'3VXmecChYYM'},
   bulgarian_split_squat: {title:'Zancada búlgara — ATHLEAN-X', id:'hiLF_pF3EJM'},
   box_jump: {title:'Box Jump — Coach PJ Nestler', id:'IgB8NkJ5Xpc'},
   plank_rotation: {title:'Plancha con rotación de tronco', id:'sySDBRLfDms'},
   pull_up: {title:'Dominadas — ATHLEAN-X', id:'ubqW_QCWRjo'},
-  row: {title:'Remo con barra/mancuerna — Jeff Nippard', id:'axoeDmW0oAY'},
+  row: {title:'Remo con mancuerna — ATHLEAN-X', id:'gfUg6qWohTk'},
   db_shoulder_press: {title:'Dumbbell Shoulder Press — Scott Herman Fitness', id:'qEwKCR5JCog'},
-  face_pull: {title:'Face Pull — ATHLEAN-X', id:'eIq5CB9JfKE'},
+  face_pull: {title:'Face Pull — Scott Herman Fitness', id:'rep-qVOkqgk'},
   dead_hang: {title:'Dead Hang — ATHLEAN-X', id:'juo_9Lkwu0M'},
   burpee: {title:'Burpee técnica — CrossFit (Bulu Box)', id:'yhw4WaPyyrQ'},
   battle_ropes: {title:'Battle Ropes básico — Onnit', id:'9ooVXS7tKog'},
   mountain_climbers: {title:'Mountain Climbers — Nick Tumminello', id:'De3Gl-nC7IQ'},
   kettlebell_swing: {title:'Kettlebell Swing — StrongFirst', id:'yHxcTn1UeAc'},
-  med_ball_throw: {title:'Lanzamiento rotacional — Back to Basics Fitness', id:'Ks8bTUdpe2Y'},
+  med_ball_throw: {title:'Lanzamiento rotacional — Boxing Science', id:'MilgWMme3Q4'},
   broad_jump: {title:'Broad Jump — Simple Speed Coach', id:'BiaUluYAjNM'},
   push_press: {title:'Push Press — Catalyst Athletics', id:'yklSQG1_Ovc'},
   pallof_press: {title:'Pallof Press — ATHLEAN-X', id:'4gdeZx_Udbc'},
@@ -296,6 +298,69 @@ var PLAN = {
     {title:'Revisión', items:[{id:'review', text:'Revisión semanal: video + diario', note:true}]}
   ]}
 };
+var TRAVEL_START = '2026-11-02';
+var TRAVEL_END = '2026-11-09';
+var TRAVEL_PLAN = {
+  '2026-11-02': {label:'Lunes (viaje)', sched:'Viaje a USA — llegada, sin BJJ', blocks:[
+    {title:'Ajuste de viaje', items:[
+      {id:'mobility', text:'Movilidad general — 10-15 min (piernas cargadas del vuelo)'},
+      {id:'walk', text:'Caminar 20-30 min si es posible'}
+    ]}
+  ]},
+  '2026-11-03': {label:'Martes (viaje)', sched:'Piscina del hotel + cuerpo libre', blocks:[
+    {title:'Piscina', items:[{id:'swim', text:'Natación libre — 20-30 min, ritmo constante'}]},
+    {title:'Cuerpo libre', items:[
+      {id:'plank', text:'Plancha con rotación — 3x10 por lado', v:'plank_rotation'},
+      {id:'pushup', text:'Push-ups — 3x15', v:'push_up'}
+    ]}
+  ]},
+  '2026-11-04': {label:'Miércoles (viaje)', sched:'Gym del hotel — lo que haya disponible', blocks:[
+    {title:'Gym del hotel', items:[
+      {id:'squat', text:'Sentadilla (barra, mancuerna o solo cuerpo) — 4x12'},
+      {id:'row', text:'Remo (máquina, mancuerna o banda si hay) — 4x12', v:'row'},
+      {id:'press', text:'Press de hombro — 3x12'}
+    ]},
+    {title:'Boxeo de sombra', items:[{id:'shadow', text:'3-4 rondas', v:'shadow_fundamentals'}]}
+  ]},
+  '2026-11-05': {label:'Jueves (viaje)', sched:'Circuito de cuerpo — sin equipo', blocks:[
+    {title:'Circuito de cuerpo', items:[
+      {id:'burpee', text:'Burpees — 4x12', v:'burpee'},
+      {id:'climbers', text:'Mountain climbers — 4x30s', v:'mountain_climbers'},
+      {id:'squatjump', text:'Sentadilla con salto — 4x12'},
+      {id:'plank', text:'Plancha — 4x30s'}
+    ]}
+  ]},
+  '2026-11-06': {label:'Viernes (viaje)', sched:'Piscina del hotel + movilidad', blocks:[
+    {title:'Piscina', items:[{id:'swim', text:'Natación — técnica + series, 25-30 min'}]},
+    {title:'Movilidad', items:[
+      {id:'hip9090', text:'Movilidad de cadera 90/90', v:'hip_90_90'},
+      {id:'neckbridge', text:'Puente de cuello', v:'neck_bridge'}
+    ]}
+  ]},
+  '2026-11-07': {label:'Sábado (viaje)', sched:'Gym del hotel — lo que haya disponible', blocks:[
+    {title:'Gym del hotel', items:[
+      {id:'rdl', text:'Peso muerto rumano o bisagra de cadera — 4x10', v:'rdl'},
+      {id:'pullrow', text:'Dominadas o remo — 4x8-12'},
+      {id:'core', text:'Core: plancha + pallof si hay banda/cable', v:'pallof_press'}
+    ]},
+    {title:'Boxeo de sombra', items:[{id:'shadow', text:'Libre, 3-4 rondas', v:'shadow_fundamentals'}]}
+  ]},
+  '2026-11-08': {label:'Domingo (viaje)', sched:'Flow corporal — no depende de equipo', blocks:[
+    {title:'Flow corporal', items:[
+      {id:'flow_cars', text:'CARs — movilidad articular, 5 min', v:'flow_cars'},
+      {id:'flow_animal', text:'Animal Flow — 5 min', v:'flow_animal'},
+      {id:'flow_stretch', text:'Estiramiento flow completo', v:'flow_stretch'},
+      {id:'walk', text:'Caminata turística cuenta — 30+ min'}
+    ]}
+  ]},
+  '2026-11-09': {label:'Lunes (regreso)', sched:'Viaje de regreso — transición', blocks:[
+    {title:'Regreso', items:[
+      {id:'mobility', text:'Movilidad ligera — 10 min'},
+      {id:'stretch', text:'Estiramiento general'}
+    ]}
+  ]}
+};
+
 var DAY_ORDER = ['mon','tue','wed','thu','fri','sat','sun'];
 var DAY_SHORT = {mon:'L',tue:'M',wed:'M',thu:'J',fri:'V',sat:'S',sun:'D'};
 
@@ -305,7 +370,7 @@ function loadState(){
     var raw = localStorage.getItem(STORAGE_KEY);
     if (raw) return JSON.parse(raw);
   } catch(e){}
-  return {weeks:{}, notes:{}};
+  return {weeks:{}, notes:{}, overrides:{}};
 }
 function saveState(){ try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e){} }
 var state = loadState();
@@ -441,7 +506,22 @@ function mergeStates(a, b){
     });
     notes[wk] = days;
   });
-  return {weeks: weeks, notes: notes};
+  var overrides = {};
+  var ovWeekKeys = Object.keys(a.overrides||{}).concat(Object.keys(b.overrides||{}));
+  ovWeekKeys.forEach(function(wk){
+    if (overrides[wk]) return;
+    var aw = (a.overrides && a.overrides[wk]) || {};
+    var bw = (b.overrides && b.overrides[wk]) || {};
+    var days = {};
+    var dayKeys = Object.keys(aw).concat(Object.keys(bw));
+    dayKeys.forEach(function(dk){
+      if (days[dk]) return;
+      var av = aw[dk], bv = bw[dk];
+      days[dk] = (av==='yes'||bv==='yes') ? 'yes' : (av||bv);
+    });
+    overrides[wk] = days;
+  });
+  return {weeks: weeks, notes: notes, overrides: overrides};
 }
 function flashStatus(msg){
   syncStatus = msg;
@@ -455,16 +535,29 @@ var ui = {
   dayKey: (savedUI && PLAN[savedUI.dayKey]) ? savedUI.dayKey : todayKey()
 };
 
-function allItemsOfDay(dayKey){
+function dateOfWeekDay(weekKey, dayKey){
+  var monday = new Date(weekKey+'T00:00:00');
+  var offset = DAY_ORDER.indexOf(dayKey);
+  return new Date(monday.getFullYear(), monday.getMonth(), monday.getDate()+offset);
+}
+function getDayPlan(weekKey, dayKey){
+  var iso = isoDate(dateOfWeekDay(weekKey, dayKey));
+  if (iso >= TRAVEL_START && iso <= TRAVEL_END && TRAVEL_PLAN[iso]) return TRAVEL_PLAN[iso];
+  return PLAN[dayKey];
+}
+function allItemsOfDay(weekKey, dayKey){
   var out = [];
-  PLAN[dayKey].blocks.forEach(function(b){ b.items.forEach(function(it){ out.push(it); }); });
+  getDayPlan(weekKey, dayKey).blocks.forEach(function(b){ b.items.forEach(function(it){ out.push(it); }); });
   return out;
 }
 function dayChecks(weekKey, dayKey){
   return (state.weeks[weekKey] && state.weeks[weekKey][dayKey]) || {};
 }
+function dayOverride(weekKey, dayKey){
+  return (state.overrides && state.overrides[weekKey] && state.overrides[weekKey][dayKey]) || '';
+}
 function dayProgress(weekKey, dayKey){
-  var items = allItemsOfDay(dayKey);
+  var items = allItemsOfDay(weekKey, dayKey);
   var checks = dayChecks(weekKey, dayKey);
   var done = 0;
   items.forEach(function(it){ if (checks[it.id]) done++; });
@@ -532,6 +625,7 @@ function dayColorClass(date, today){
   if (date.getTime() > today.getTime()) return 'future';
   var weekKey = weekKeyOfDate(date);
   var dayKey = dayKeyOfDate(date);
+  if (dayOverride(weekKey, dayKey) === 'yes') return 'green';
   var p = dayProgress(weekKey, dayKey);
   if (!p.total) return 'future';
   var pct = p.done/p.total*100;
@@ -594,8 +688,16 @@ function renderApp(){
     return '<button class="'+cls+'" data-day="'+dk+'" style="--fill:'+Math.round(dpct*100)+'%"><span class="tab-label">'+DAY_SHORT[dk]+'</span><span class="tab-fill"></span></button>';
   }).join('');
 
-  var day = PLAN[ui.dayKey];
+  var day = getDayPlan(weekKey, ui.dayKey);
   var blocks = day.blocks.map(function(b){ return renderBlock(ui.dayKey, weekKey, b); }).join('');
+  var override = dayOverride(weekKey, ui.dayKey);
+  var overrideSection = '<div class="dayoverride">'+
+    '<span class="dayoverride-q">¿Hiciste todo lo que estaba a tu alcance hoy?</span>'+
+    '<div class="dayoverride-btns">'+
+      '<button class="ov-btn'+(override==='yes'?' active-yes':'')+'" type="button" data-override="'+ui.dayKey+':yes">Sí</button>'+
+      '<button class="ov-btn'+(override==='no'?' active-no':'')+'" type="button" data-override="'+ui.dayKey+':no">No</button>'+
+    '</div>'+
+  '</div>';
 
   var syncBody = syncOpen ? (
     '<div class="sync-body">'+
@@ -630,6 +732,7 @@ function renderApp(){
   syncSection+
   '<nav class="tabs">'+tabs+'</nav>'+
   '<div class="daysched">'+day.sched+'</div>'+
+  overrideSection+
   blocks+
   renderHistory(weekKey)+
   '<section class="block">'+
@@ -670,6 +773,20 @@ appEl.addEventListener('click', function(e){
   if (syncToggle){ syncOpen = !syncOpen; render(); return; }
   var yearToggle = e.target.closest('[data-year-toggle]');
   if (yearToggle){ yearOpen = !yearOpen; render(); return; }
+  var ovBtn = e.target.closest('[data-override]');
+  if (ovBtn){
+    var ovParts = ovBtn.getAttribute('data-override').split(':');
+    var ovDay = ovParts[0], ovVal = ovParts[1];
+    var ovWeekKey = weekKeyForOffset(ui.weekOffset);
+    if (!state.overrides) state.overrides = {};
+    if (!state.overrides[ovWeekKey]) state.overrides[ovWeekKey] = {};
+    var current = state.overrides[ovWeekKey][ovDay];
+    state.overrides[ovWeekKey][ovDay] = (current === ovVal) ? '' : ovVal;
+    saveState();
+    sbPush();
+    render();
+    return;
+  }
   if (e.target.id === 'syncCopyBtn'){
     var code = encodeState(state);
     if (navigator.clipboard && navigator.clipboard.writeText){
