@@ -1,0 +1,415 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Bitácora MMA</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Work+Sans:wght@400;500;600;700&display=swap">
+<style>
+:root{
+  --bg:#EEF1F4; --surface:#FFFFFF; --fg:#15181D; --muted:#5B6472;
+  --accent:#2451C4; --accent-ink:#FFFFFF; --success:#1E8E5A; --border:#D7DBE1;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#0E1116; --surface:#171B22; --fg:#EDEFF2; --muted:#8A93A3;
+    --accent:#5B8CFF; --accent-ink:#0E1116; --success:#3FCB83; --border:#262B33;
+    color-scheme:dark;
+  }
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{
+  background:var(--bg); color:var(--fg); font-family:'Work Sans',system-ui,sans-serif;
+  padding-left:max(16px, env(safe-area-inset-left,0px));
+  padding-right:max(16px, env(safe-area-inset-right,0px));
+  padding-block:20px 48px; max-width:600px; margin:0 auto;
+}
+h1{font-family:'Oswald',sans-serif;text-transform:uppercase;letter-spacing:.02em;font-size:28px;margin:2px 0 14px;font-weight:600}
+.eyebrow{font-family:'Oswald',sans-serif;text-transform:uppercase;letter-spacing:.14em;font-size:11px;color:var(--accent);font-weight:600}
+.weeknav{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:10px}
+.nav{background:var(--surface);border:1px solid var(--border);color:var(--fg);width:34px;height:34px;border-radius:50%;font-size:16px;line-height:1;cursor:pointer}
+.weekrange{font-weight:600;font-size:14px;min-width:132px;text-align:center;font-variant-numeric:tabular-nums}
+.progress{display:flex;align-items:center;gap:10px;margin-bottom:20px}
+.progress-track{flex:1;height:8px;border-radius:5px;background:var(--border);overflow:hidden}
+.progress-fill{height:100%;background:var(--success);border-radius:5px;transition:width .3s ease}
+.progress-label{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.tabs{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:16px}
+.tab{position:relative;height:52px;padding:0;display:flex;align-items:center;justify-content:center;background:var(--surface);border:1px solid var(--border);border-radius:10px;cursor:pointer;color:var(--muted);font-family:'Oswald',sans-serif;font-weight:600;overflow:hidden}
+.tab-label{position:relative;z-index:2}
+.tab-fill{position:absolute;left:0;bottom:0;width:100%;height:var(--fill,0%);background:var(--success);opacity:.22;z-index:1}
+.tab.active{border-color:var(--accent);color:var(--fg)}
+.tab.active .tab-label{color:var(--accent)}
+.tab.done{color:var(--success)}
+.block{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:12px}
+.block-title{font-family:'Oswald',sans-serif;text-transform:uppercase;font-weight:600;font-size:14px;letter-spacing:.04em;color:var(--accent);margin-bottom:10px}
+.items{display:flex;flex-direction:column;gap:8px}
+.item{display:flex;align-items:center;gap:10px;padding:10px;border:1px solid var(--border);border-radius:10px}
+.item.checked{border-color:var(--success)}
+.box{width:22px;height:22px;flex:none;border:2px solid var(--border);border-radius:6px;display:flex;align-items:center;justify-content:center;color:#fff;background:var(--surface);cursor:pointer}
+.item.checked .box{background:var(--success);border-color:var(--success)}
+.item-text{font-size:13.5px;line-height:1.3;flex:1;cursor:pointer}
+.item.checked .item-text{color:var(--muted);text-decoration:line-through}
+.vidbtn{flex:none;background:var(--accent);color:var(--accent-ink);border:none;border-radius:8px;font-family:'Oswald',sans-serif;font-weight:600;font-size:11px;letter-spacing:.03em;padding:7px 10px;cursor:pointer;white-space:nowrap}
+.vidbtn.pending{background:transparent;color:var(--muted);border:1px dashed var(--border)}
+.daysched{color:var(--muted);font-size:12px;margin:-6px 0 16px}
+.history{margin-bottom:14px}
+.history-title{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;font-family:'Oswald',sans-serif}
+.history-row{display:flex;gap:10px;align-items:flex-end;height:60px}
+.hbar{display:flex;flex-direction:column;align-items:center;gap:4px;flex:1}
+.hbar-track{width:100%;height:40px;background:var(--border);border-radius:4px;display:flex;align-items:flex-end;overflow:hidden}
+.hbar-fill{width:100%;background:var(--accent);border-radius:4px 4px 0 0}
+.hbar-label{font-size:10px;color:var(--muted);font-variant-numeric:tabular-nums}
+.ft{text-align:center;color:var(--muted);font-size:11px;margin-top:6px}
+.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.72);display:flex;align-items:center;justify-content:center;padding:20px;z-index:50}
+.modal-backdrop[hidden]{display:none}
+.modal{background:var(--surface);border-radius:14px;max-width:560px;width:100%;overflow:hidden}
+.modal-head{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid var(--border)}
+.modal-title{font-family:'Oswald',sans-serif;font-weight:600;font-size:14px;text-transform:uppercase}
+.modal-close{background:none;border:none;color:var(--fg);font-size:20px;cursor:pointer;line-height:1}
+.modal-body{aspect-ratio:16/9;background:#000}
+.modal-body iframe{width:100%;height:100%;border:0;display:block}
+@media (max-width:380px){ h1{font-size:24px} }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div class="modal-backdrop" id="modalBackdrop" hidden>
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title" id="modalTitle">Técnica</div>
+      <button class="modal-close" id="modalClose" aria-label="Cerrar">&times;</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+<script>
+// VIDEOS: exercise key -> {title, id} (YouTube video id). null = pendiente.
+var VIDEOS = {
+  hip_escape: null, technical_standup: null, sprawl: null, bridge_turn: null,
+  hip_rotation_standing: null, balance_lateral: null, shadow_fundamentals: null,
+  sandbag_clean_press: null, bear_hug_carry: null, sandbag_getup: null,
+  sandbag_squat_throw: null, farmer_carry: null, hip_90_90: null, shoulder_er_band: null,
+  neck_bridge: null, back_squat: null, rdl: null, bulgarian_split_squat: null,
+  box_jump: null, plank_rotation: null, pull_up: null, row: null, db_shoulder_press: null,
+  face_pull: null, dead_hang: null, burpee: null, battle_ropes: null, mountain_climbers: null,
+  kettlebell_swing: null, med_ball_throw: null, broad_jump: null, push_press: null,
+  pallof_press: null, push_up: null
+};
+
+var PLAN = {
+  mon:{label:'Lunes', sched:'Gym 16:00–18:00 (Fuerza inferior) · BJJ 30 min', blocks:[
+    {title:'Gym — Fuerza inferior y potencia de cadera', items:[
+      {id:'squat', text:'Sentadilla trasera o goblet squat — 4x6', v:'back_squat'},
+      {id:'rdl', text:'Peso muerto rumano (RDL) — 3x8', v:'rdl'},
+      {id:'bulgarian', text:'Zancada búlgara — 3x8 por lado', v:'bulgarian_split_squat'},
+      {id:'jump', text:'Salto a cajón o vertical — 4x5', v:'box_jump'},
+      {id:'plank_rot', text:'Plancha con rotación — 3x10 por lado', v:'plank_rotation'}
+    ]},
+    {title:'BJJ', items:[{id:'bjj', text:'BJJ 30 min'}]},
+    {title:'Boxeo de sombra', items:[{id:'shadow', text:'4 rondas — footwork, combos, defensa, intensidad', v:'shadow_fundamentals'}]},
+    {title:'Biomecánica', items:[
+      {id:'hip_escape', text:'Hip escape — 4x12 por lado', v:'hip_escape'},
+      {id:'standup', text:'Technical stand-up — 4x10 por lado', v:'technical_standup'},
+      {id:'sprawl', text:'Sprawl desde parado — 4x10', v:'sprawl'},
+      {id:'bridge', text:'Puente + giro a 4 puntos — 4x8 por lado', v:'bridge_turn'},
+      {id:'hiprot', text:'Rotación de cadera aislada — 4x18 por lado', v:'hip_rotation_standing'},
+      {id:'balance', text:'Equilibrio en una pierna con desplazamiento — 2.5 min por lado', v:'balance_lateral'}
+    ]},
+    {title:'Diario', items:[{id:'journal', text:'Diario post-entreno'}]}
+  ]},
+  tue:{label:'Martes', sched:'Sin gym · BJJ 30 min', blocks:[
+    {title:'BJJ', items:[{id:'bjj', text:'BJJ 30 min'}]},
+    {title:'Fuerza con saco', items:[
+      {id:'clean_press', text:'Sandbag clean + press — 5x10', v:'sandbag_clean_press'},
+      {id:'bear_hug', text:'Bear hug carry — 3x30m', v:'bear_hug_carry'},
+      {id:'getup', text:'Sandbag get-up — 3x6 por lado', v:'sandbag_getup'},
+      {id:'squat_throw', text:'Sandbag squat to throw — 3x8', v:'sandbag_squat_throw'},
+      {id:'farmer', text:'Farmer carry / sandbag row — 3x12', v:'farmer_carry'}
+    ]},
+    {title:'Boxeo de sombra', items:[{id:'shadow', text:'5 rondas + visualización', v:'shadow_fundamentals'}]},
+    {title:'Biomecánica', items:[
+      {id:'hip_escape', text:'Hip escape — 4x12 por lado', v:'hip_escape'},
+      {id:'standup', text:'Technical stand-up — 4x10 por lado', v:'technical_standup'},
+      {id:'sprawl', text:'Sprawl desde parado — 4x10', v:'sprawl'},
+      {id:'bridge', text:'Puente + giro a 4 puntos — 4x8 por lado', v:'bridge_turn'},
+      {id:'hiprot', text:'Rotación de cadera aislada — 4x18 por lado', v:'hip_rotation_standing'},
+      {id:'balance', text:'Equilibrio en una pierna con desplazamiento — 2.5 min por lado', v:'balance_lateral'}
+    ]},
+    {title:'Diario', items:[{id:'journal', text:'Diario post-entreno'}]}
+  ]},
+  wed:{label:'Miércoles', sched:'Gym 16:00–18:00 (Fuerza superior) · BJJ 18:00–20:00', blocks:[
+    {title:'Gym — Fuerza superior y tracción', items:[
+      {id:'pullup', text:'Dominadas / jalón asistido — 4x6-8', v:'pull_up'},
+      {id:'row', text:'Remo con barra o mancuernas — 4x8', v:'row'},
+      {id:'shoulder_press', text:'Press de hombro con mancuernas — 3x8', v:'db_shoulder_press'},
+      {id:'facepull', text:'Face pull — 3x12', v:'face_pull'},
+      {id:'deadhang', text:'Dead hang — 3x máximo tiempo', v:'dead_hang'}
+    ]},
+    {title:'BJJ', items:[{id:'bjj', text:'BJJ completo (18:00–20:00)'}]},
+    {title:'Movilidad y recuperación', items:[
+      {id:'hip9090', text:'Movilidad de cadera 90/90 — 5 min', v:'hip_90_90'},
+      {id:'shoulder_er', text:'Rotación externa de hombro con banda — 3x12', v:'shoulder_er_band'},
+      {id:'neckbridge', text:'Puente de cuello isométrico — 3x20s', v:'neck_bridge'}
+    ]},
+    {title:'Diario', items:[{id:'journal', text:'Diario post-entreno'}]}
+  ]},
+  thu:{label:'Jueves', sched:'Gym 16:00–18:00 (Acondicionamiento) · BJJ 18:00–20:00', blocks:[
+    {title:'Gym — Acondicionamiento metabólico', items:[
+      {id:'burpee', text:'Burpees — circuito 5 rondas', v:'burpee'},
+      {id:'ropes', text:'Battle ropes', v:'battle_ropes'},
+      {id:'climbers', text:'Mountain climbers', v:'mountain_climbers'},
+      {id:'kb_swing', text:'Kettlebell swing', v:'kettlebell_swing'}
+    ]},
+    {title:'BJJ', items:[{id:'bjj', text:'BJJ completo (18:00–20:00)'}]},
+    {title:'Movilidad y recuperación', items:[
+      {id:'hip9090', text:'Movilidad de cadera 90/90 — 5 min', v:'hip_90_90'},
+      {id:'shoulder_er', text:'Rotación externa de hombro con banda — 3x12', v:'shoulder_er_band'},
+      {id:'neckbridge', text:'Puente de cuello isométrico — 3x20s', v:'neck_bridge'}
+    ]},
+    {title:'Diario', items:[{id:'journal', text:'Diario post-entreno'}]}
+  ]},
+  fri:{label:'Viernes', sched:'Gym 16:00–18:00 (Potencia total) · BJJ 18:00–20:00', blocks:[
+    {title:'Gym — Potencia total cuerpo completo', items:[
+      {id:'kb_swing2', text:'Kettlebell swing — 4x10', v:'kettlebell_swing'},
+      {id:'med_ball', text:'Lanzamiento de balón medicinal rotacional — 3x8 por lado', v:'med_ball_throw'},
+      {id:'broad_jump', text:'Salto largo — 4x5', v:'broad_jump'},
+      {id:'push_press', text:'Push press — 3x6', v:'push_press'},
+      {id:'pallof', text:'Core anti-rotación — 3x10', v:'pallof_press'},
+      {id:'finisher', text:'Finisher: carry con saco/kettlebell — 3x30m', v:'farmer_carry'}
+    ]},
+    {title:'BJJ', items:[{id:'bjj', text:'BJJ completo (18:00–20:00)'}]},
+    {title:'Movilidad y recuperación', items:[
+      {id:'hip9090', text:'Movilidad de cadera 90/90 — 5 min', v:'hip_90_90'},
+      {id:'shoulder_er', text:'Rotación externa de hombro con banda — 3x12', v:'shoulder_er_band'},
+      {id:'neckbridge', text:'Puente de cuello isométrico — 3x20s', v:'neck_bridge'}
+    ]},
+    {title:'Diario', items:[{id:'journal', text:'Diario post-entreno'}]}
+  ]},
+  sat:{label:'Sábado', sched:'Gym 16:00–18:00 (Movilidad + metabólico) · Sin BJJ', blocks:[
+    {title:'Gym — Movilidad + circuito metabólico', items:[
+      {id:'hip9090s', text:'Movilidad de cadera 90/90 — 3x10 por lado', v:'hip_90_90'},
+      {id:'neckbridges', text:'Puente de cuello isométrico — 3x20s', v:'neck_bridge'},
+      {id:'shoulder_ers', text:'Rotación externa de hombro — 3x15', v:'shoulder_er_band'},
+      {id:'plank_fl', text:'Plancha frontal + lateral — 3x30s', v:'plank_rotation'},
+      {id:'metabolic', text:'Circuito: goblet squat x15, push-ups x15, mountain climbers 30s, cuerda 1min', v:'push_up'}
+    ]},
+    {title:'Drilling solo BJJ', items:[{id:'drilling', text:'Hip escape, bridge, stand-up, sprawl (repaso)'}]},
+    {title:'Boxeo de sombra', items:[{id:'shadow', text:'Sombra libre', v:'shadow_fundamentals'}]},
+    {title:'Saco de arena (opcional)', items:[{id:'sandbag_opt', text:'Circuito de saco opcional'}]},
+    {title:'Revisión', items:[{id:'video_review', text:'Video de análisis semanal'}]}
+  ]},
+  sun:{label:'Domingo', sched:'Entreno ligero + cardio — recuperación activa', blocks:[
+    {title:'Entreno ligero', items:[
+      {id:'shadow_light', text:'Boxeo de sombra ligero (2-3 rondas)', v:'shadow_fundamentals'},
+      {id:'drilling_light', text:'Drilling solo de BJJ ligero'},
+      {id:'cardio', text:'Cardio continuo moderado (15-20 min)'},
+      {id:'mobility_light', text:'Movilidad y respiración (10–15 min)'}
+    ]},
+    {title:'Revisión', items:[{id:'review', text:'Revisión semanal: video + diario'}]}
+  ]}
+};
+var DAY_ORDER = ['mon','tue','wed','thu','fri','sat','sun'];
+var DAY_SHORT = {mon:'L',tue:'M',wed:'M',thu:'J',fri:'V',sat:'S',sun:'D'};
+
+var STORAGE_KEY = 'mma_bitacora_v1';
+function loadState(){
+  try {
+    var raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch(e){}
+  return {weeks:{}};
+}
+function saveState(){ try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e){} }
+var state = loadState();
+
+function loadUI(){
+  try {
+    var raw = localStorage.getItem('mma_ui_v1');
+    if (raw) return JSON.parse(raw);
+  } catch(e){}
+  return null;
+}
+function saveUI(){ try { localStorage.setItem('mma_ui_v1', JSON.stringify(ui)); } catch(e){} }
+
+function pad(n){ return n<10 ? '0'+n : ''+n; }
+function isoDate(d){ return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
+function mondayForOffset(offset){
+  var now = new Date();
+  var dow = now.getDay();
+  var diffToMonday = (dow === 0 ? -6 : 1 - dow);
+  var monday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  monday.setDate(monday.getDate() + diffToMonday + offset*7);
+  return monday;
+}
+function weekKeyForOffset(offset){ return isoDate(mondayForOffset(offset)); }
+function todayKey(){
+  var map = ['sun','mon','tue','wed','thu','fri','sat'];
+  return map[new Date().getDay()];
+}
+
+var savedUI = loadUI();
+var ui = {
+  weekOffset: (savedUI && typeof savedUI.weekOffset === 'number') ? savedUI.weekOffset : 0,
+  dayKey: (savedUI && PLAN[savedUI.dayKey]) ? savedUI.dayKey : todayKey()
+};
+
+function allItemsOfDay(dayKey){
+  var out = [];
+  PLAN[dayKey].blocks.forEach(function(b){ b.items.forEach(function(it){ out.push(it); }); });
+  return out;
+}
+function dayChecks(weekKey, dayKey){
+  return (state.weeks[weekKey] && state.weeks[weekKey][dayKey]) || {};
+}
+function dayProgress(weekKey, dayKey){
+  var items = allItemsOfDay(dayKey);
+  var checks = dayChecks(weekKey, dayKey);
+  var done = 0;
+  items.forEach(function(it){ if (checks[it.id]) done++; });
+  return {done:done, total: items.length};
+}
+function weekProgress(weekKey){
+  var done=0, total=0;
+  DAY_ORDER.forEach(function(dk){
+    var p = dayProgress(weekKey, dk);
+    done += p.done; total += p.total;
+  });
+  return {done:done, total:total};
+}
+function fmtRange(monday){
+  var sunday = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate()+6);
+  var months = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+  return monday.getDate()+' '+months[monday.getMonth()]+' – '+sunday.getDate()+' '+months[sunday.getMonth()];
+}
+function escapeHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function checkSvg(){ return '<svg viewBox="0 0 16 16" width="12" height="12"><path d="M2 8.5 6 12l8-8" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></svg>'; }
+
+function renderHistory(currentWeekKey){
+  var keys = Object.keys(state.weeks).filter(function(k){ return k !== currentWeekKey; }).sort().reverse().slice(0,4);
+  if (!keys.length) return '';
+  var bars = keys.map(function(k){
+    var wp = weekProgress(k);
+    var pct = wp.total ? Math.round(wp.done/wp.total*100) : 0;
+    var d = new Date(k+'T00:00:00');
+    var label = d.getDate()+'/'+(d.getMonth()+1);
+    return '<div class="hbar"><div class="hbar-track"><div class="hbar-fill" style="height:'+pct+'%"></div></div><div class="hbar-label">'+label+'</div></div>';
+  }).join('');
+  return '<section class="history"><div class="history-title">Semanas anteriores</div><div class="history-row">'+bars+'</div></section>';
+}
+
+function renderBlock(dayKey, weekKey, block){
+  var checks = dayChecks(weekKey, dayKey);
+  var items = block.items.map(function(it){
+    var checked = !!checks[it.id];
+    var video = it.v ? VIDEOS[it.v] : null;
+    var vidBtn = '';
+    if (it.v){
+      if (video) vidBtn = '<button class="vidbtn" data-video="'+it.v+'" data-title="'+escapeHtml(video.title)+'">▶ Ver</button>';
+      else vidBtn = '<button class="vidbtn pending" disabled>Video pendiente</button>';
+    }
+    return '<div class="item'+(checked?' checked':'')+'">'+
+      '<span class="box" data-toggle="'+dayKey+':'+it.id+'" role="checkbox" aria-checked="'+checked+'" tabindex="0">'+(checked?checkSvg():'')+'</span>'+
+      '<span class="item-text" data-toggle="'+dayKey+':'+it.id+'">'+escapeHtml(it.text)+'</span>'+
+      vidBtn+
+    '</div>';
+  }).join('');
+  return '<section class="block"><div class="block-title">'+block.title+'</div><div class="items">'+items+'</div></section>';
+}
+
+function renderApp(){
+  var weekKey = weekKeyForOffset(ui.weekOffset);
+  var monday = mondayForOffset(ui.weekOffset);
+  var wp = weekProgress(weekKey);
+  var pct = wp.total ? Math.round(wp.done/wp.total*100) : 0;
+
+  var tabs = DAY_ORDER.map(function(dk){
+    var p = dayProgress(weekKey, dk);
+    var dpct = p.total ? p.done/p.total : 0;
+    var cls = 'tab' + (dk===ui.dayKey?' active':'') + (dpct>=1?' done':'');
+    return '<button class="'+cls+'" data-day="'+dk+'" style="--fill:'+Math.round(dpct*100)+'%"><span class="tab-label">'+DAY_SHORT[dk]+'</span><span class="tab-fill"></span></button>';
+  }).join('');
+
+  var day = PLAN[ui.dayKey];
+  var blocks = day.blocks.map(function(b){ return renderBlock(ui.dayKey, weekKey, b); }).join('');
+
+  return '<header class="hd">'+
+    '<div class="eyebrow">Plan semanal</div>'+
+    '<h1>Bitácora MMA</h1>'+
+    '<div class="weeknav">'+
+      '<button class="nav" data-nav="prev" aria-label="Semana anterior">‹</button>'+
+      '<div class="weekrange">'+fmtRange(monday)+'</div>'+
+      '<button class="nav" data-nav="next" aria-label="Semana siguiente">›</button>'+
+    '</div>'+
+    '<div class="progress">'+
+      '<div class="progress-track"><div class="progress-fill" style="width:'+pct+'%"></div></div>'+
+      '<div class="progress-label">'+wp.done+'/'+wp.total+' · '+pct+'%</div>'+
+    '</div>'+
+  '</header>'+
+  '<nav class="tabs">'+tabs+'</nav>'+
+  '<div class="daysched">'+day.sched+'</div>'+
+  blocks+
+  renderHistory(weekKey)+
+  '<footer class="ft">Guardado en este navegador/dispositivo.</footer>';
+}
+
+function render(){ document.getElementById('app').innerHTML = renderApp(); }
+
+function toggle(dayKey, itemId){
+  var weekKey = weekKeyForOffset(ui.weekOffset);
+  if (!state.weeks[weekKey]) state.weeks[weekKey] = {};
+  if (!state.weeks[weekKey][dayKey]) state.weeks[weekKey][dayKey] = {};
+  state.weeks[weekKey][dayKey][itemId] = !state.weeks[weekKey][dayKey][itemId];
+  saveState();
+  render();
+}
+
+function openVideo(key, title){
+  var v = VIDEOS[key];
+  if (!v) return;
+  document.getElementById('modalTitle').textContent = title || 'Técnica';
+  document.getElementById('modalBody').innerHTML = '<iframe src="https://www.youtube.com/embed/'+v.id+'" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
+  document.getElementById('modalBackdrop').hidden = false;
+}
+function closeVideo(){
+  document.getElementById('modalBackdrop').hidden = true;
+  document.getElementById('modalBody').innerHTML = '';
+}
+
+var appEl = document.getElementById('app');
+appEl.addEventListener('click', function(e){
+  var navBtn = e.target.closest('[data-nav]');
+  if (navBtn){
+    ui.weekOffset += navBtn.getAttribute('data-nav')==='next' ? 1 : -1;
+    if (ui.weekOffset > 4) ui.weekOffset = 4;
+    if (ui.weekOffset < -8) ui.weekOffset = -8;
+    saveUI(); render(); return;
+  }
+  var dayBtn = e.target.closest('[data-day]');
+  if (dayBtn){ ui.dayKey = dayBtn.getAttribute('data-day'); saveUI(); render(); return; }
+  var vidBtn = e.target.closest('[data-video]');
+  if (vidBtn && !vidBtn.disabled){ openVideo(vidBtn.getAttribute('data-video'), vidBtn.getAttribute('data-title')); return; }
+  var toggleEl = e.target.closest('[data-toggle]');
+  if (toggleEl){
+    var parts = toggleEl.getAttribute('data-toggle').split(':');
+    toggle(parts[0], parts[1]);
+  }
+});
+appEl.addEventListener('keydown', function(e){
+  if (e.key !== 'Enter' && e.key !== ' ') return;
+  var toggleEl = e.target.closest('[data-toggle]');
+  if (toggleEl){
+    e.preventDefault();
+    var parts = toggleEl.getAttribute('data-toggle').split(':');
+    toggle(parts[0], parts[1]);
+  }
+});
+document.getElementById('modalClose').addEventListener('click', closeVideo);
+document.getElementById('modalBackdrop').addEventListener('click', function(e){
+  if (e.target.id === 'modalBackdrop') closeVideo();
+});
+
+render();
+</script>
+</body>
+</html>
