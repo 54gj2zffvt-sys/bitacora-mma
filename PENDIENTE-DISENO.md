@@ -1,12 +1,14 @@
 # Pendiente: rediseño de la bitácora (esperando sistema de diseño compartido)
 
-Estado: **LISTO PARA CONSTRUIR — esperando aprobación de los bocetos**.
-`~/nutriologo-mma/sistema-de-diseno.md` ya existe y está completo (incluye
-los tokens de RONDA: --session-striking #0093E7, --session-grappling
-#7BA1BB). Bocetos de Hoy/modo entrenamiento/temporizador ya mostrados:
-https://claude.ai/artifact/MyhCtoqVR3sFw9e584rV9Q
-No tocar el código real de la bitácora hasta que el usuario apruebe esos
-bocetos.
+Estado: **CERRADO**. Estilo Whoop (sistema de diseño compartido,
+`~/nutriologo-mma/sistema-de-diseno.md`) aplicado y verificado en vivo
+en RONDA: anillo de progreso, paleta negro/turquesa, checks en acento,
+grid anual con los 3 estados oficiales (--ok/--mid/--danger).
+
+"Modo entrenamiento" y "Temporizador de rounds" quedaron solo como
+bocetos aprobados (https://claude.ai/artifact/MyhCtoqVR3sFw9e584rV9Q),
+**decisión explícita del usuario de NO construirlos como función real**
+("no usaré nada de eso") — no reabrir sin que lo pida de nuevo.
 
 ## Uso personal (aplica siempre, no es solo visual)
 - Sin registro de usuarios, planes de pago, suscripciones, anuncios,
