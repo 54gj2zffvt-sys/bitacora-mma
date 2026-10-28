@@ -62,6 +62,22 @@ h1{font-family:'Oswald',sans-serif;text-transform:uppercase;letter-spacing:.02em
 .hbar-fill{width:100%;background:var(--accent);border-radius:4px 4px 0 0}
 .hbar-label{font-size:10px;color:var(--muted);font-variant-numeric:tabular-nums}
 .ft{text-align:center;color:var(--muted);font-size:11px;margin-top:6px}
+.note-input{width:100%;min-height:56px;margin-top:-2px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--fg);font-family:'Work Sans',sans-serif;font-size:13px;padding:8px;resize:vertical}
+.year-scroll{overflow-x:auto;padding-bottom:4px}
+.year-months{display:flex;gap:2px;margin-bottom:4px;height:12px}
+.year-month-label{width:11px;flex:none;font-size:9px;color:var(--muted);white-space:nowrap;overflow:visible}
+.year-grid{display:flex;gap:2px}
+.ycol{display:flex;flex-direction:column;gap:2px}
+.ycell{width:11px;height:11px;border-radius:2px;background:var(--border)}
+.ycell.red{background:#E5484D}
+.ycell.orange{background:#F5A524}
+.ycell.yellow{background:#F2C94C}
+.ycell.green{background:var(--success)}
+.ycell.future{background:var(--border);opacity:.35}
+.ycell.empty{background:transparent}
+.year-legend{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:10px;font-size:11px;color:var(--muted)}
+.year-legend .ycell{width:10px;height:10px;display:inline-block;border-radius:2px}
+.year-toggle{width:100%;background:none;border:none;color:var(--accent);font-family:'Oswald',sans-serif;font-weight:600;font-size:13px;letter-spacing:.03em;text-align:left;cursor:pointer;padding:0;margin-bottom:10px}
 .sync-toggle{width:100%;background:none;border:none;color:var(--accent);font-family:'Oswald',sans-serif;font-weight:600;font-size:13px;letter-spacing:.03em;text-align:left;cursor:pointer;padding:0}
 .sync-body{padding-top:12px;display:flex;flex-direction:column;gap:10px}
 .sync-hint{font-size:12px;color:var(--muted);line-height:1.4}
@@ -109,8 +125,8 @@ h1{font-family:'Oswald',sans-serif;text-transform:uppercase;letter-spacing:.02em
    sigue funcionando normal, solo que guarda el progreso únicamente en
    este dispositivo (y queda disponible el botón de copiar/pegar manual).
    ====================================================================== */
-var SUPABASE_URL = 'PEGA_AQUI_TU_PROJECT_URL';
-var SUPABASE_ANON_KEY = 'PEGA_AQUI_TU_ANON_KEY';
+var SUPABASE_URL = 'https://kewnruqiapgqdcmafsvt.supabase.co';
+var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtld25ydXFpYXBncWRjbWFmc3Z0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMxNTEzNzUsImV4cCI6MjEwODcyNzM3NX0.cOulwauTFQk7QEphea8znUnYZGgvmpUkagKeoehQpnU';
 /* ====================================================================== */
 
 // VIDEOS: exercise key -> {title, id} (YouTube video id). null = pendiente.
@@ -121,10 +137,10 @@ var VIDEOS = {
   bridge_turn: {title:'Puente y giro — Stephan Kesting', id:'HFkTqCqd6wg'},
   hip_rotation_standing: {title:'Boxing Hip Turn Drill (verificar forma)', id:'dFM4a4F9jH4'},
   balance_lateral: {title:'Equilibrio en una pierna con alcance', id:'TJ6TgSFQmeo'},
-  shadow_fundamentals: null,
+  shadow_fundamentals: {title:'Shadow Box 101 — Tony Jeffries', id:'fWfsbL2ulj8'},
   sandbag_clean_press: {title:'Sandbag clean & press — Ultimate Sandbag Training', id:'Bi1RWaoqW4w'},
   bear_hug_carry: {title:'Sandbag Bear Hug Carry — OPEX', id:'hBu76e72MHw'},
-  sandbag_getup: null,
+  sandbag_getup: {title:'Sandbag Shoulder Get-up — Josh Henkin (DVRT)', id:'U_cvXXtyz5o'},
   sandbag_squat_throw: {title:'Sandbag squat-to-shoulder — Ultimate Sandbag Training', id:'rbY3SZs-t8E'},
   farmer_carry: {title:'Farmer\'s Carry — Steve Slater', id:'vi4X2iSOyiA'},
   hip_90_90: {title:'90/90 Hip Mobility', id:'HUZimFZJZWU'},
@@ -137,18 +153,18 @@ var VIDEOS = {
   plank_rotation: {title:'Plancha con rotación de tronco', id:'sySDBRLfDms'},
   pull_up: {title:'Dominadas — ATHLEAN-X', id:'ubqW_QCWRjo'},
   row: {title:'Remo con barra/mancuerna — Jeff Nippard', id:'axoeDmW0oAY'},
-  db_shoulder_press: null,
+  db_shoulder_press: {title:'Dumbbell Shoulder Press — Scott Herman Fitness', id:'qEwKCR5JCog'},
   face_pull: {title:'Face Pull — ATHLEAN-X', id:'eIq5CB9JfKE'},
   dead_hang: {title:'Dead Hang — ATHLEAN-X', id:'juo_9Lkwu0M'},
   burpee: {title:'Burpee técnica — CrossFit (Bulu Box)', id:'yhw4WaPyyrQ'},
   battle_ropes: {title:'Battle Ropes básico — Onnit', id:'9ooVXS7tKog'},
-  mountain_climbers: null,
+  mountain_climbers: {title:'Mountain Climbers — Nick Tumminello', id:'De3Gl-nC7IQ'},
   kettlebell_swing: {title:'Kettlebell Swing — StrongFirst', id:'yHxcTn1UeAc'},
   med_ball_throw: {title:'Lanzamiento rotacional — Back to Basics Fitness', id:'Ks8bTUdpe2Y'},
-  broad_jump: null,
-  push_press: null,
+  broad_jump: {title:'Broad Jump técnica — Garage Strength', id:'q7851uL2M8c'},
+  push_press: {title:'Push Press — Catalyst Athletics', id:'yklSQG1_Ovc'},
   pallof_press: {title:'Pallof Press — ATHLEAN-X', id:'4gdeZx_Udbc'},
-  push_up: null
+  push_up: {title:'Push-up forma perfecta — ATHLEAN-X', id:'Zi6c09DRGxk'}
 };
 
 var PLAN = {
@@ -161,6 +177,7 @@ var PLAN = {
       {id:'plank_rot', text:'Plancha con rotación — 3x10 por lado', v:'plank_rotation'}
     ]},
     {title:'BJJ', items:[{id:'bjj', text:'BJJ 30 min'}]},
+    {title:'Diario', items:[{id:'journal', text:'Diario post-entreno', note:true}]},
     {title:'Boxeo de sombra', items:[{id:'shadow', text:'4 rondas — footwork, combos, defensa, intensidad', v:'shadow_fundamentals'}]},
     {title:'Biomecánica', items:[
       {id:'hip_escape', text:'Hip escape — 4x12 por lado', v:'hip_escape'},
@@ -169,11 +186,11 @@ var PLAN = {
       {id:'bridge', text:'Puente + giro a 4 puntos — 4x8 por lado', v:'bridge_turn'},
       {id:'hiprot', text:'Rotación de cadera aislada — 4x18 por lado', v:'hip_rotation_standing'},
       {id:'balance', text:'Equilibrio en una pierna con desplazamiento — 2.5 min por lado', v:'balance_lateral'}
-    ]},
-    {title:'Diario', items:[{id:'journal', text:'Diario post-entreno'}]}
+    ]}
   ]},
   tue:{label:'Martes', sched:'Sin gym · BJJ 30 min', blocks:[
     {title:'BJJ', items:[{id:'bjj', text:'BJJ 30 min'}]},
+    {title:'Diario', items:[{id:'journal', text:'Diario post-entreno', note:true}]},
     {title:'Fuerza con saco', items:[
       {id:'clean_press', text:'Sandbag clean + press — 5x10', v:'sandbag_clean_press'},
       {id:'bear_hug', text:'Bear hug carry — 3x30m', v:'bear_hug_carry'},
@@ -189,8 +206,7 @@ var PLAN = {
       {id:'bridge', text:'Puente + giro a 4 puntos — 4x8 por lado', v:'bridge_turn'},
       {id:'hiprot', text:'Rotación de cadera aislada — 4x18 por lado', v:'hip_rotation_standing'},
       {id:'balance', text:'Equilibrio en una pierna con desplazamiento — 2.5 min por lado', v:'balance_lateral'}
-    ]},
-    {title:'Diario', items:[{id:'journal', text:'Diario post-entreno'}]}
+    ]}
   ]},
   wed:{label:'Miércoles', sched:'Gym 16:00–18:00 (Fuerza superior) · BJJ 18:00–20:00', blocks:[
     {title:'Gym — Fuerza superior y tracción', items:[
@@ -201,12 +217,12 @@ var PLAN = {
       {id:'deadhang', text:'Dead hang — 3x máximo tiempo', v:'dead_hang'}
     ]},
     {title:'BJJ', items:[{id:'bjj', text:'BJJ completo (18:00–20:00)'}]},
+    {title:'Diario', items:[{id:'journal', text:'Diario post-entreno', note:true}]},
     {title:'Movilidad y recuperación', items:[
       {id:'hip9090', text:'Movilidad de cadera 90/90 — 5 min', v:'hip_90_90'},
       {id:'shoulder_er', text:'Rotación externa de hombro con banda — 3x12', v:'shoulder_er_band'},
       {id:'neckbridge', text:'Puente de cuello isométrico — 3x20s', v:'neck_bridge'}
-    ]},
-    {title:'Diario', items:[{id:'journal', text:'Diario post-entreno'}]}
+    ]}
   ]},
   thu:{label:'Jueves', sched:'Gym 16:00–18:00 (Acondicionamiento) · BJJ 18:00–20:00', blocks:[
     {title:'Gym — Acondicionamiento metabólico', items:[
@@ -216,12 +232,12 @@ var PLAN = {
       {id:'kb_swing', text:'Kettlebell swing', v:'kettlebell_swing'}
     ]},
     {title:'BJJ', items:[{id:'bjj', text:'BJJ completo (18:00–20:00)'}]},
+    {title:'Diario', items:[{id:'journal', text:'Diario post-entreno', note:true}]},
     {title:'Movilidad y recuperación', items:[
       {id:'hip9090', text:'Movilidad de cadera 90/90 — 5 min', v:'hip_90_90'},
       {id:'shoulder_er', text:'Rotación externa de hombro con banda — 3x12', v:'shoulder_er_band'},
       {id:'neckbridge', text:'Puente de cuello isométrico — 3x20s', v:'neck_bridge'}
-    ]},
-    {title:'Diario', items:[{id:'journal', text:'Diario post-entreno'}]}
+    ]}
   ]},
   fri:{label:'Viernes', sched:'Gym 16:00–18:00 (Potencia total) · BJJ 18:00–20:00', blocks:[
     {title:'Gym — Potencia total cuerpo completo', items:[
@@ -233,12 +249,12 @@ var PLAN = {
       {id:'finisher', text:'Finisher: carry con saco/kettlebell — 3x30m', v:'farmer_carry'}
     ]},
     {title:'BJJ', items:[{id:'bjj', text:'BJJ completo (18:00–20:00)'}]},
+    {title:'Diario', items:[{id:'journal', text:'Diario post-entreno', note:true}]},
     {title:'Movilidad y recuperación', items:[
       {id:'hip9090', text:'Movilidad de cadera 90/90 — 5 min', v:'hip_90_90'},
       {id:'shoulder_er', text:'Rotación externa de hombro con banda — 3x12', v:'shoulder_er_band'},
       {id:'neckbridge', text:'Puente de cuello isométrico — 3x20s', v:'neck_bridge'}
-    ]},
-    {title:'Diario', items:[{id:'journal', text:'Diario post-entreno'}]}
+    ]}
   ]},
   sat:{label:'Sábado', sched:'Gym 16:00–18:00 (Movilidad + metabólico) · Sin BJJ', blocks:[
     {title:'Gym — Movilidad + circuito metabólico', items:[
@@ -249,9 +265,9 @@ var PLAN = {
       {id:'metabolic', text:'Circuito: goblet squat x15, push-ups x15, mountain climbers 30s, cuerda 1min', v:'push_up'}
     ]},
     {title:'Drilling solo BJJ', items:[{id:'drilling', text:'Hip escape, bridge, stand-up, sprawl (repaso)'}]},
+    {title:'Revisión', items:[{id:'video_review', text:'Video de análisis semanal', note:true}]},
     {title:'Boxeo de sombra', items:[{id:'shadow', text:'Sombra libre', v:'shadow_fundamentals'}]},
-    {title:'Saco de arena (opcional)', items:[{id:'sandbag_opt', text:'Circuito de saco opcional'}]},
-    {title:'Revisión', items:[{id:'video_review', text:'Video de análisis semanal'}]}
+    {title:'Saco de arena (opcional)', items:[{id:'sandbag_opt', text:'Circuito de saco opcional'}]}
   ]},
   sun:{label:'Domingo', sched:'Entreno ligero + cardio — recuperación activa', blocks:[
     {title:'Entreno ligero', items:[
@@ -260,7 +276,7 @@ var PLAN = {
       {id:'cardio', text:'Cardio continuo moderado (15-20 min)'},
       {id:'mobility_light', text:'Movilidad y respiración (10–15 min)'}
     ]},
-    {title:'Revisión', items:[{id:'review', text:'Revisión semanal: video + diario'}]}
+    {title:'Revisión', items:[{id:'review', text:'Revisión semanal: video + diario', note:true}]}
   ]}
 };
 var DAY_ORDER = ['mon','tue','wed','thu','fri','sat','sun'];
@@ -272,7 +288,7 @@ function loadState(){
     var raw = localStorage.getItem(STORAGE_KEY);
     if (raw) return JSON.parse(raw);
   } catch(e){}
-  return {weeks:{}};
+  return {weeks:{}, notes:{}};
 }
 function saveState(){ try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e){} }
 var state = loadState();
@@ -342,8 +358,19 @@ function todayKey(){
   var map = ['sun','mon','tue','wed','thu','fri','sat'];
   return map[new Date().getDay()];
 }
+function mondayOfDate(d){
+  var dow = d.getDay();
+  var diffToMonday = (dow === 0 ? -6 : 1 - dow);
+  return new Date(d.getFullYear(), d.getMonth(), d.getDate()+diffToMonday);
+}
+function weekKeyOfDate(d){ return isoDate(mondayOfDate(d)); }
+function dayKeyOfDate(d){
+  var map = ['sun','mon','tue','wed','thu','fri','sat'];
+  return map[d.getDay()];
+}
 
 var syncOpen = false;
+var yearOpen = false;
 var syncStatus = '';
 var syncStatusTimer = null;
 
@@ -379,7 +406,25 @@ function mergeStates(a, b){
     });
     weeks[wk] = days;
   });
-  return {weeks: weeks};
+  var notes = {};
+  var noteWeekKeys = Object.keys(a.notes||{}).concat(Object.keys(b.notes||{}));
+  noteWeekKeys.forEach(function(wk){
+    if (notes[wk]) return;
+    var aw = (a.notes && a.notes[wk]) || {};
+    var bw = (b.notes && b.notes[wk]) || {};
+    var days = {};
+    var dayKeys = Object.keys(aw).concat(Object.keys(bw));
+    dayKeys.forEach(function(dk){
+      if (days[dk]) return;
+      var ad = aw[dk] || {}; var bd = bw[dk] || {};
+      var items = {};
+      var itemKeys = Object.keys(ad).concat(Object.keys(bd));
+      itemKeys.forEach(function(ik){ items[ik] = ad[ik] || bd[ik] || ''; });
+      days[dk] = items;
+    });
+    notes[wk] = days;
+  });
+  return {weeks: weeks, notes: notes};
 }
 function flashStatus(msg){
   syncStatus = msg;
@@ -437,8 +482,13 @@ function renderHistory(currentWeekKey){
   return '<section class="history"><div class="history-title">Semanas anteriores</div><div class="history-row">'+bars+'</div></section>';
 }
 
+function dayNotes(weekKey, dayKey){
+  return (state.notes && state.notes[weekKey] && state.notes[weekKey][dayKey]) || {};
+}
+
 function renderBlock(dayKey, weekKey, block){
   var checks = dayChecks(weekKey, dayKey);
+  var notes = dayNotes(weekKey, dayKey);
   var items = block.items.map(function(it){
     var checked = !!checks[it.id];
     var video = it.v ? VIDEOS[it.v] : null;
@@ -447,13 +497,69 @@ function renderBlock(dayKey, weekKey, block){
       if (video) vidBtn = '<button class="vidbtn" data-video="'+it.v+'" data-title="'+escapeHtml(video.title)+'">▶ Ver</button>';
       else vidBtn = '<button class="vidbtn pending" disabled>Video pendiente</button>';
     }
-    return '<div class="item'+(checked?' checked':'')+'">'+
+    var row = '<div class="item'+(checked?' checked':'')+'">'+
       '<span class="box" data-toggle="'+dayKey+':'+it.id+'" role="checkbox" aria-checked="'+checked+'" tabindex="0">'+(checked?checkSvg():'')+'</span>'+
       '<span class="item-text" data-toggle="'+dayKey+':'+it.id+'">'+escapeHtml(it.text)+'</span>'+
       vidBtn+
     '</div>';
+    if (it.note){
+      var noteVal = notes[it.id] || '';
+      row += '<textarea class="note-input" data-note="'+dayKey+':'+it.id+'" placeholder="Qué funcionó / qué falló / ajuste para la próxima...">'+escapeHtml(noteVal)+'</textarea>';
+    }
+    return row;
   }).join('');
   return '<section class="block"><div class="block-title">'+block.title+'</div><div class="items">'+items+'</div></section>';
+}
+
+function dayColorClass(date, today){
+  if (date.getTime() > today.getTime()) return 'future';
+  var weekKey = weekKeyOfDate(date);
+  var dayKey = dayKeyOfDate(date);
+  var p = dayProgress(weekKey, dayKey);
+  if (!p.total) return 'future';
+  var pct = p.done/p.total*100;
+  if (pct >= 100) return 'green';
+  if (pct > 50) return 'yellow';
+  if (pct > 15) return 'orange';
+  return 'red';
+}
+
+function renderYearGrid(){
+  var start = mondayOfDate(new Date());
+  var today = new Date(); today.setHours(0,0,0,0);
+  var totalDays = 365;
+  var cols = Math.ceil(totalDays/7);
+  var monthNames = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+  var monthsHtml = '';
+  var colsHtml = '';
+  var lastMonth = -1;
+  for (var c=0; c<cols; c++){
+    var colFirstDate = new Date(start.getFullYear(), start.getMonth(), start.getDate()+c*7);
+    var label = '';
+    if (colFirstDate.getMonth() !== lastMonth){
+      label = monthNames[colFirstDate.getMonth()];
+      lastMonth = colFirstDate.getMonth();
+    }
+    monthsHtml += '<div class="year-month-label">'+label+'</div>';
+    var cellsHtml = '';
+    for (var r=0;r<7;r++){
+      var idx = c*7+r;
+      if (idx>=totalDays){ cellsHtml += '<div class="ycell empty"></div>'; continue; }
+      var d = new Date(start.getFullYear(), start.getMonth(), start.getDate()+idx);
+      var cls = dayColorClass(d, today);
+      var lbl = d.getDate()+' '+monthNames[d.getMonth()];
+      cellsHtml += '<div class="ycell '+cls+'" title="'+lbl+'"></div>';
+    }
+    colsHtml += '<div class="ycol">'+cellsHtml+'</div>';
+  }
+  return '<div class="year-scroll"><div class="year-months">'+monthsHtml+'</div><div class="year-grid">'+colsHtml+'</div></div>'+
+    '<div class="year-legend">'+
+      '<span class="ycell red"></span> ≤15%'+
+      '<span class="ycell orange"></span> 16-50%'+
+      '<span class="ycell yellow"></span> 51-99%'+
+      '<span class="ycell green"></span> 100%'+
+      '<span class="ycell future"></span> por venir'+
+    '</div>';
 }
 
 function renderApp(){
@@ -507,6 +613,10 @@ function renderApp(){
   '<div class="daysched">'+day.sched+'</div>'+
   blocks+
   renderHistory(weekKey)+
+  '<section class="block">'+
+    '<button class="year-toggle" type="button" data-year-toggle>📅 Respaldo anual — próximos 365 días '+(yearOpen?'▲':'▼')+'</button>'+
+    (yearOpen ? renderYearGrid() : '')+
+  '</section>'+
   '<footer class="ft">Guardado en este navegador/dispositivo.</footer>';
 }
 
@@ -539,6 +649,8 @@ appEl.addEventListener('click', function(e){
   if (e.target.id === 'syncOut'){ e.target.select(); return; }
   var syncToggle = e.target.closest('[data-sync-toggle]');
   if (syncToggle){ syncOpen = !syncOpen; render(); return; }
+  var yearToggle = e.target.closest('[data-year-toggle]');
+  if (yearToggle){ yearOpen = !yearOpen; render(); return; }
   if (e.target.id === 'syncCopyBtn'){
     var code = encodeState(state);
     if (navigator.clipboard && navigator.clipboard.writeText){
@@ -568,8 +680,8 @@ appEl.addEventListener('click', function(e){
   var navBtn = e.target.closest('[data-nav]');
   if (navBtn){
     ui.weekOffset += navBtn.getAttribute('data-nav')==='next' ? 1 : -1;
-    if (ui.weekOffset > 4) ui.weekOffset = 4;
-    if (ui.weekOffset < -8) ui.weekOffset = -8;
+    if (ui.weekOffset > 52) ui.weekOffset = 52;
+    if (ui.weekOffset < -52) ui.weekOffset = -52;
     saveUI(); render(); return;
   }
   var dayBtn = e.target.closest('[data-day]');
@@ -581,6 +693,19 @@ appEl.addEventListener('click', function(e){
     var parts = toggleEl.getAttribute('data-toggle').split(':');
     toggle(parts[0], parts[1]);
   }
+});
+appEl.addEventListener('input', function(e){
+  var noteEl = e.target.closest('[data-note]');
+  if (!noteEl) return;
+  var parts = noteEl.getAttribute('data-note').split(':');
+  var dk = parts[0], ik = parts[1];
+  var weekKey = weekKeyForOffset(ui.weekOffset);
+  if (!state.notes) state.notes = {};
+  if (!state.notes[weekKey]) state.notes[weekKey] = {};
+  if (!state.notes[weekKey][dk]) state.notes[weekKey][dk] = {};
+  state.notes[weekKey][dk][ik] = noteEl.value;
+  saveState();
+  sbPush();
 });
 appEl.addEventListener('keydown', function(e){
   if (e.key !== 'Enter' && e.key !== ' ') return;
