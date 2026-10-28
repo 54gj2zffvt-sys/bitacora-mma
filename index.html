@@ -559,7 +559,7 @@ function renderYearGrid(){
       var idx = c*7+r;
       if (idx>=totalDays){ cellsHtml += '<div class="ycell empty"></div>'; continue; }
       var d = new Date(start.getFullYear(), start.getMonth(), start.getDate()+idx);
-      var cls = dayColorClass(d, today);
+      var cls = d.getTime() < today.getTime() ? 'empty' : dayColorClass(d, today);
       var lbl = d.getDate()+' '+monthNames[d.getMonth()];
       cellsHtml += '<div class="ycell '+cls+'" title="'+lbl+'"></div>';
     }
