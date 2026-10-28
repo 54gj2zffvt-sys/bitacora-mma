@@ -74,6 +74,7 @@ h1{font-family:'Oswald',sans-serif;text-transform:uppercase;letter-spacing:.02em
 .ycell.yellow{background:#F2C94C}
 .ycell.green{background:var(--success)}
 .ycell.future{background:var(--border);opacity:.35}
+.ycell.none{background:var(--border);opacity:.8}
 .ycell.empty{background:transparent}
 .year-legend{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:10px;font-size:11px;color:var(--muted)}
 .year-legend .ycell{width:10px;height:10px;display:inline-block;border-radius:2px}
@@ -521,7 +522,8 @@ function dayColorClass(date, today){
   if (pct >= 100) return 'green';
   if (pct > 50) return 'yellow';
   if (pct > 15) return 'orange';
-  return 'red';
+  if (pct > 0) return 'red';
+  return 'none';
 }
 
 function renderYearGrid(){
@@ -554,7 +556,8 @@ function renderYearGrid(){
   }
   return '<div class="year-scroll"><div class="year-months">'+monthsHtml+'</div><div class="year-grid">'+colsHtml+'</div></div>'+
     '<div class="year-legend">'+
-      '<span class="ycell red"></span> ≤15%'+
+      '<span class="ycell none"></span> 0%'+
+      '<span class="ycell red"></span> 1-15%'+
       '<span class="ycell orange"></span> 16-50%'+
       '<span class="ycell yellow"></span> 51-99%'+
       '<span class="ycell green"></span> 100%'+
