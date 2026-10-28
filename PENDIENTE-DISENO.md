@@ -1,10 +1,12 @@
 # Pendiente: rediseño de la bitácora (esperando sistema de diseño compartido)
 
-Estado: **EN ESPERA**. No tocar el diseño visual hasta que exista
-`sistema-de-diseno.md` (y su archivo de colores/estilos) en el proyecto
-`~/nutriologo-mma/` — ese archivo lo genera la sesión "Nutriologo" cuando
-llegue a su Fase 5 (diseño de la app). Mientras no exista, la bitácora
-sigue funcionando tal cual está, solo cambia cuando se apruebe lo de abajo.
+Estado: **LISTO PARA CONSTRUIR — esperando aprobación de los bocetos**.
+`~/nutriologo-mma/sistema-de-diseno.md` ya existe y está completo (incluye
+los tokens de RONDA: --session-striking #0093E7, --session-grappling
+#7BA1BB). Bocetos de Hoy/modo entrenamiento/temporizador ya mostrados:
+https://claude.ai/artifact/MyhCtoqVR3sFw9e584rV9Q
+No tocar el código real de la bitácora hasta que el usuario apruebe esos
+bocetos.
 
 ## Uso personal (aplica siempre, no es solo visual)
 - Sin registro de usuarios, planes de pago, suscripciones, anuncios,
