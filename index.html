@@ -134,11 +134,11 @@ var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYm
 var VIDEOS = {
   hip_escape: {title:'Hip escape / shrimping — RVV BJJ', id:'D0rTw8IfJDE'},
   technical_standup: {title:'Technical stand-up — Stephan Kesting', id:'Thp7ipnjyTI'},
-  sprawl: {title:'Sprawl desde parado — Effective Martial Arts', id:'z4ZoTmn1Gvs'},
-  bridge_turn: {title:'Puente y giro — Stephan Kesting', id:'HFkTqCqd6wg'},
+  sprawl: {title:'Sprawl Solo Drill — Flow Athletics', id:'YyA0JAnK5l8'},
+  bridge_turn: {title:'Bridge & Roll Escape — CORE MMA', id:'UyxNPnR24hE'},
   hip_rotation_standing: {title:'Boxing Hip Turn Drill (verificar forma)', id:'dFM4a4F9jH4'},
   balance_lateral: {title:'Equilibrio en una pierna con alcance', id:'TJ6TgSFQmeo'},
-  shadow_fundamentals: {title:'Shadow Box 101 — Tony Jeffries', id:'fWfsbL2ulj8'},
+  shadow_fundamentals: {title:'Shadow Boxing rápido — Tony Jeffries', id:'J4j3AOVWuHE'},
   sandbag_clean_press: {title:'Sandbag clean & press — Ultimate Sandbag Training', id:'Bi1RWaoqW4w'},
   bear_hug_carry: {title:'Sandbag Bear Hug Carry — OPEX', id:'hBu76e72MHw'},
   sandbag_getup: {title:'Sandbag Shoulder Get-up — Josh Henkin (DVRT)', id:'U_cvXXtyz5o'},
@@ -150,7 +150,7 @@ var VIDEOS = {
   back_squat: {title:'Sentadilla — ATHLEAN-X', id:'nEQQle9-0NA'},
   rdl: {title:'Peso muerto rumano — Jeff Nippard', id:'_oyxCn2iSjU'},
   bulgarian_split_squat: {title:'Zancada búlgara — ATHLEAN-X', id:'hiLF_pF3EJM'},
-  box_jump: {title:'Box Jump técnica — Outperform', id:'cLSB_Zn0awM'},
+  box_jump: {title:'Box Jump — Coach PJ Nestler', id:'IgB8NkJ5Xpc'},
   plank_rotation: {title:'Plancha con rotación de tronco', id:'sySDBRLfDms'},
   pull_up: {title:'Dominadas — ATHLEAN-X', id:'ubqW_QCWRjo'},
   row: {title:'Remo con barra/mancuerna — Jeff Nippard', id:'axoeDmW0oAY'},
@@ -162,15 +162,19 @@ var VIDEOS = {
   mountain_climbers: {title:'Mountain Climbers — Nick Tumminello', id:'De3Gl-nC7IQ'},
   kettlebell_swing: {title:'Kettlebell Swing — StrongFirst', id:'yHxcTn1UeAc'},
   med_ball_throw: {title:'Lanzamiento rotacional — Back to Basics Fitness', id:'Ks8bTUdpe2Y'},
-  broad_jump: {title:'Broad Jump técnica — Garage Strength', id:'q7851uL2M8c'},
+  broad_jump: {title:'Broad Jump — Simple Speed Coach', id:'BiaUluYAjNM'},
   push_press: {title:'Push Press — Catalyst Athletics', id:'yklSQG1_Ovc'},
   pallof_press: {title:'Pallof Press — ATHLEAN-X', id:'4gdeZx_Udbc'},
   push_up: {title:'Push-up forma perfecta — ATHLEAN-X', id:'Zi6c09DRGxk'},
-  jump_rope_intervals: null,
-  band_lateral_walk: null,
-  band_row: null,
-  band_punches: null,
-  band_kick: null
+  jump_rope_intervals: {title:'Boxer Skip — Eddie Jumps', id:'xx_j95o5qvI'},
+  band_lateral_walk: {title:'Lateral Band Walk — The Strong Angle', id:'ESmDtnFmK0o'},
+  band_row: {title:'Remo con banda — Get Healthy U', id:'LSkyinhmA8k'},
+  band_punches: {title:'Shadow boxing con bandas', id:'7Ppn6hywLHw'},
+  band_kick: {title:'Bandas para MMA — John Kavanagh', id:'YNHdfACjj5k'},
+  flow_cars: {title:'CARs — movilidad articular controlada', id:'Bf2Y0ShZRf0'},
+  flow_animal: {title:'Animal Flow — Crab Activation', id:'BJlyKGpVSYQ'},
+  flow_shadow: {title:'Encuentra tu flow — Muay Thai Rhythm', id:'pT4EZZh8VGY'},
+  flow_stretch: {title:'Estiramiento flow — rutina completa', id:'9Vu18XBUBVE'}
 };
 
 var PLAN = {
@@ -275,12 +279,14 @@ var PLAN = {
     {title:'Boxeo de sombra', items:[{id:'shadow', text:'Sombra libre', v:'shadow_fundamentals'}]},
     {title:'Cuerda de saltar (opcional)', items:[{id:'jump_rope_opt', text:'Circuito libre de cuerda', v:'jump_rope_intervals'}]}
   ]},
-  sun:{label:'Domingo', sched:'Entreno ligero + cardio — recuperación activa', blocks:[
-    {title:'Entreno ligero', items:[
-      {id:'shadow_light', text:'Boxeo de sombra ligero (2-3 rondas)', v:'shadow_fundamentals'},
-      {id:'drilling_light', text:'Drilling solo de BJJ ligero'},
-      {id:'cardio', text:'Cardio continuo moderado (15-20 min)'},
-      {id:'mobility_light', text:'Movilidad y respiración (10–15 min)'}
+  sun:{label:'Domingo', sched:'Flow corporal — recuperación activa', blocks:[
+    {title:'Flow corporal', items:[
+      {id:'flow_cars', text:'CARs — movilidad articular controlada, 5 min', v:'flow_cars'},
+      {id:'flow_animal', text:'Animal Flow — bear crawl / crab, 5 min', v:'flow_animal'},
+      {id:'flow_shadow', text:'Shadow-flow — movimiento libre, sin combos fijos', v:'flow_shadow'},
+      {id:'flow_stretch', text:'Estiramiento flow — rutina completa', v:'flow_stretch'},
+      {id:'walk', text:'Caminata — 20-30 min, ritmo tranquilo'},
+      {id:'drilling_light', text:'Drilling solo de BJJ ligero (opcional)'}
     ]},
     {title:'Revisión', items:[{id:'review', text:'Revisión semanal: video + diario', note:true}]}
   ]}
