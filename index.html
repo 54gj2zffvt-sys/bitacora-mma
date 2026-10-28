@@ -61,6 +61,12 @@ h1{font-family:'Oswald',sans-serif;text-transform:uppercase;letter-spacing:.02em
 .hbar-fill{width:100%;background:var(--accent);border-radius:4px 4px 0 0}
 .hbar-label{font-size:10px;color:var(--muted);font-variant-numeric:tabular-nums}
 .ft{text-align:center;color:var(--muted);font-size:11px;margin-top:6px}
+.sync-toggle{width:100%;background:none;border:none;color:var(--accent);font-family:'Oswald',sans-serif;font-weight:600;font-size:13px;letter-spacing:.03em;text-align:left;cursor:pointer;padding:0}
+.sync-body{padding-top:12px;display:flex;flex-direction:column;gap:10px}
+.sync-hint{font-size:12px;color:var(--muted);line-height:1.4}
+.sync-body textarea{width:100%;min-height:64px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--fg);font-family:ui-monospace,Menlo,monospace;font-size:11px;padding:8px;resize:vertical}
+.sync-btn{background:var(--accent);color:var(--accent-ink);border:none;border-radius:8px;font-family:'Oswald',sans-serif;font-weight:600;font-size:12px;padding:9px 12px;cursor:pointer}
+.sync-status{font-size:11.5px;color:var(--success);min-height:14px}
 .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.72);display:flex;align-items:center;justify-content:center;padding:20px;z-index:50}
 .modal-backdrop[hidden]{display:none}
 .modal{background:var(--surface);border-radius:14px;max-width:560px;width:100%;overflow:hidden}
@@ -273,6 +279,50 @@ function todayKey(){
   return map[new Date().getDay()];
 }
 
+var syncOpen = false;
+var syncStatus = '';
+var syncStatusTimer = null;
+
+function encodeState(s){
+  try { return 'MMA1:' + btoa(unescape(encodeURIComponent(JSON.stringify(s)))); } catch(e){ return ''; }
+}
+function decodeState(code){
+  code = (code||'').trim();
+  if (code.indexOf('MMA1:') !== 0) return null;
+  try {
+    var json = decodeURIComponent(escape(atob(code.slice(5))));
+    var obj = JSON.parse(json);
+    if (obj && typeof obj === 'object' && obj.weeks) return obj;
+  } catch(e){}
+  return null;
+}
+function mergeStates(a, b){
+  var weeks = {};
+  var weekKeys = Object.keys(a.weeks||{}).concat(Object.keys(b.weeks||{}));
+  weekKeys.forEach(function(wk){
+    if (weeks[wk]) return;
+    var aw = (a.weeks && a.weeks[wk]) || {};
+    var bw = (b.weeks && b.weeks[wk]) || {};
+    var days = {};
+    var dayKeys = Object.keys(aw).concat(Object.keys(bw));
+    dayKeys.forEach(function(dk){
+      if (days[dk]) return;
+      var ad = aw[dk] || {}; var bd = bw[dk] || {};
+      var items = {};
+      var itemKeys = Object.keys(ad).concat(Object.keys(bd));
+      itemKeys.forEach(function(ik){ items[ik] = !!ad[ik] || !!bd[ik]; });
+      days[dk] = items;
+    });
+    weeks[wk] = days;
+  });
+  return {weeks: weeks};
+}
+function flashStatus(msg){
+  syncStatus = msg;
+  if (syncStatusTimer) clearTimeout(syncStatusTimer);
+  syncStatusTimer = setTimeout(function(){ syncStatus=''; render(); }, 2500);
+}
+
 var savedUI = loadUI();
 var ui = {
   weekOffset: (savedUI && typeof savedUI.weekOffset === 'number') ? savedUI.weekOffset : 0,
@@ -358,6 +408,22 @@ function renderApp(){
   var day = PLAN[ui.dayKey];
   var blocks = day.blocks.map(function(b){ return renderBlock(ui.dayKey, weekKey, b); }).join('');
 
+  var syncBody = syncOpen ? (
+    '<div class="sync-body">'+
+      '<div class="sync-hint">En el dispositivo con el progreso más reciente, copia el código. En el otro dispositivo, pégalo e impórtalo — se combinan los dos progresos, nada se borra.</div>'+
+      '<button class="sync-btn" type="button" id="syncCopyBtn">📋 Copiar mi progreso</button>'+
+      '<textarea id="syncOut" readonly>'+escapeHtml(encodeState(state))+'</textarea>'+
+      '<textarea id="syncIn" placeholder="Pega aquí el código del otro dispositivo"></textarea>'+
+      '<button class="sync-btn" type="button" id="syncImportBtn">⬇️ Importar y combinar</button>'+
+      '<div class="sync-status">'+escapeHtml(syncStatus)+'</div>'+
+    '</div>'
+  ) : '';
+
+  var syncSection = '<section class="block sync">'+
+    '<button class="sync-toggle" type="button" data-sync-toggle>🔄 Sincronizar celular ↔ computadora '+(syncOpen?'▲':'▼')+'</button>'+
+    syncBody+
+  '</section>';
+
   return '<header class="hd">'+
     '<div class="eyebrow">Plan semanal</div>'+
     '<h1>Bitácora MMA</h1>'+
@@ -371,6 +437,7 @@ function renderApp(){
       '<div class="progress-label">'+wp.done+'/'+wp.total+' · '+pct+'%</div>'+
     '</div>'+
   '</header>'+
+  syncSection+
   '<nav class="tabs">'+tabs+'</nav>'+
   '<div class="daysched">'+day.sched+'</div>'+
   blocks+
@@ -403,6 +470,34 @@ function closeVideo(){
 
 var appEl = document.getElementById('app');
 appEl.addEventListener('click', function(e){
+  if (e.target.id === 'syncOut'){ e.target.select(); return; }
+  var syncToggle = e.target.closest('[data-sync-toggle]');
+  if (syncToggle){ syncOpen = !syncOpen; render(); return; }
+  if (e.target.id === 'syncCopyBtn'){
+    var code = encodeState(state);
+    if (navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(code).then(function(){
+        flashStatus('Copiado ✓'); render();
+      }).catch(function(){
+        var ta = document.getElementById('syncOut'); if (ta) ta.select();
+        flashStatus('No se pudo copiar solo — selecciona el texto y cópialo'); render();
+      });
+    } else {
+      var ta2 = document.getElementById('syncOut'); if (ta2) ta2.select();
+      flashStatus('Selecciona el texto y cópialo'); render();
+    }
+    return;
+  }
+  if (e.target.id === 'syncImportBtn'){
+    var input = document.getElementById('syncIn');
+    var decoded = decodeState(input ? input.value : '');
+    if (!decoded){ flashStatus('Código inválido'); render(); return; }
+    state = mergeStates(state, decoded);
+    saveState();
+    flashStatus('Progreso combinado ✓');
+    render();
+    return;
+  }
   var navBtn = e.target.closest('[data-nav]');
   if (navBtn){
     ui.weekOffset += navBtn.getAttribute('data-nav')==='next' ? 1 : -1;
