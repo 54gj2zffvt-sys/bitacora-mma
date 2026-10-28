@@ -165,7 +165,12 @@ var VIDEOS = {
   broad_jump: {title:'Broad Jump técnica — Garage Strength', id:'q7851uL2M8c'},
   push_press: {title:'Push Press — Catalyst Athletics', id:'yklSQG1_Ovc'},
   pallof_press: {title:'Pallof Press — ATHLEAN-X', id:'4gdeZx_Udbc'},
-  push_up: {title:'Push-up forma perfecta — ATHLEAN-X', id:'Zi6c09DRGxk'}
+  push_up: {title:'Push-up forma perfecta — ATHLEAN-X', id:'Zi6c09DRGxk'},
+  jump_rope_intervals: null,
+  band_lateral_walk: null,
+  band_row: null,
+  band_punches: null,
+  band_kick: null
 };
 
 var PLAN = {
@@ -192,12 +197,12 @@ var PLAN = {
   tue:{label:'Martes', sched:'Sin gym · BJJ 30 min', blocks:[
     {title:'BJJ', items:[{id:'bjj', text:'BJJ 30 min'}]},
     {title:'Diario', items:[{id:'journal', text:'Diario post-entreno', note:true}]},
-    {title:'Fuerza con saco', items:[
-      {id:'clean_press', text:'Sandbag clean + press — 5x10', v:'sandbag_clean_press'},
-      {id:'bear_hug', text:'Bear hug carry — 3x30m', v:'bear_hug_carry'},
-      {id:'getup', text:'Sandbag get-up — 3x6 por lado', v:'sandbag_getup'},
-      {id:'squat_throw', text:'Sandbag squat to throw — 3x8', v:'sandbag_squat_throw'},
-      {id:'farmer', text:'Farmer carry / sandbag row — 3x12', v:'farmer_carry'}
+    {title:'Cuerda y bandas', items:[
+      {id:'jump_rope', text:'Cuerda de saltar — 8 rounds de 1:30 (estilo boxeador)', v:'jump_rope_intervals'},
+      {id:'band_walk', text:'Lateral band walk — 3x15 pasos por lado', v:'band_lateral_walk'},
+      {id:'band_row', text:'Remo con banda — 4x15', v:'band_row'},
+      {id:'band_punch', text:'Golpes con resistencia de banda — 3x20 por lado', v:'band_punches'},
+      {id:'band_kick', text:'Extensión de cadera / patada con banda — 3x12 por lado', v:'band_kick'}
     ]},
     {title:'Boxeo de sombra', items:[{id:'shadow', text:'5 rondas + visualización', v:'shadow_fundamentals'}]},
     {title:'Biomecánica', items:[
@@ -268,7 +273,7 @@ var PLAN = {
     {title:'Drilling solo BJJ', items:[{id:'drilling', text:'Hip escape, bridge, stand-up, sprawl (repaso)'}]},
     {title:'Revisión', items:[{id:'video_review', text:'Video de análisis semanal', note:true}]},
     {title:'Boxeo de sombra', items:[{id:'shadow', text:'Sombra libre', v:'shadow_fundamentals'}]},
-    {title:'Saco de arena (opcional)', items:[{id:'sandbag_opt', text:'Circuito de saco opcional'}]}
+    {title:'Cuerda de saltar (opcional)', items:[{id:'jump_rope_opt', text:'Circuito libre de cuerda', v:'jump_rope_intervals'}]}
   ]},
   sun:{label:'Domingo', sched:'Entreno ligero + cardio — recuperación activa', blocks:[
     {title:'Entreno ligero', items:[
