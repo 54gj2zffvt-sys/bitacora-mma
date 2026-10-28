@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Bitácora MMA</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Work+Sans:wght@400;500;600;700&display=swap">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <style>
 :root{
   --bg:#EEF1F4; --surface:#FFFFFF; --fg:#15181D; --muted:#5B6472;
@@ -90,6 +91,28 @@ h1{font-family:'Oswald',sans-serif;text-transform:uppercase;letter-spacing:.02em
   </div>
 </div>
 <script>
+/* ======================================================================
+   CONFIGURACIÓN DE SINCRONIZACIÓN AUTOMÁTICA (Supabase) — RELLENAR AQUÍ
+   ------------------------------------------------------------------------
+   Guía paso a paso:
+   1. Ve a supabase.com → "Start your project" → crea cuenta gratis (sin tarjeta)
+   2. "New project" → nombre, contraseña de base de datos, cualquier región
+   3. Menú izquierdo "SQL Editor" → pega y ejecuta el SQL que te dieron en el
+      chat (crea la tabla "bitacora_state" con sus permisos)
+   4. Menú izquierdo "Project Settings" (engranaje) → "API"
+   5. Copia "Project URL" y pégalo abajo en SUPABASE_URL, reemplazando el
+      texto de ejemplo (sin borrar las comillas)
+   6. Copia la clave "anon public" y pégala abajo en SUPABASE_ANON_KEY
+   7. Guarda el archivo aquí mismo en GitHub ("Commit changes")
+
+   Si dejas los dos valores tal cual están (sin rellenar), la bitácora
+   sigue funcionando normal, solo que guarda el progreso únicamente en
+   este dispositivo (y queda disponible el botón de copiar/pegar manual).
+   ====================================================================== */
+var SUPABASE_URL = 'PEGA_AQUI_TU_PROJECT_URL';
+var SUPABASE_ANON_KEY = 'PEGA_AQUI_TU_ANON_KEY';
+/* ====================================================================== */
+
 // VIDEOS: exercise key -> {title, id} (YouTube video id). null = pendiente.
 var VIDEOS = {
   hip_escape: {title:'Hip escape / shrimping — RVV BJJ', id:'D0rTw8IfJDE'},
@@ -254,6 +277,47 @@ function loadState(){
 function saveState(){ try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e){} }
 var state = loadState();
 
+var sb = null;
+var sbConfigured = SUPABASE_URL.indexOf('PEGA_AQUI') === -1 && SUPABASE_ANON_KEY.indexOf('PEGA_AQUI') === -1;
+if (sbConfigured && window.supabase){
+  try { sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY); } catch(e){ sb = null; }
+}
+var sbPushTimer = null;
+function sbPush(){
+  if (!sb) return;
+  if (sbPushTimer) clearTimeout(sbPushTimer);
+  sbPushTimer = setTimeout(function(){
+    sb.from('bitacora_state').upsert({id:'shared', data: state, updated_at: new Date().toISOString()}).then(function(){}, function(){});
+  }, 500);
+}
+function sbPull(){
+  if (!sb) return;
+  sb.from('bitacora_state').select('data').eq('id','shared').single().then(function(res){
+    if (res.data && res.data.data){
+      var merged = mergeStates(state, res.data.data);
+      if (JSON.stringify(merged) !== JSON.stringify(state)){
+        state = merged; saveState(); render();
+      }
+    }
+  }, function(){});
+}
+function sbInit(){
+  sb.from('bitacora_state').select('data').eq('id','shared').single().then(function(res){
+    if (res.data && res.data.data){ state = mergeStates(state, res.data.data); saveState(); }
+    render();
+    try {
+      sb.channel('bitacora_sync')
+        .on('postgres_changes', {event:'*', schema:'public', table:'bitacora_state', filter:'id=eq.shared'}, function(payload){
+          if (payload.new && payload.new.data){
+            state = mergeStates(state, payload.new.data); saveState(); render();
+          }
+        })
+        .subscribe();
+    } catch(e){}
+    setInterval(sbPull, 6000);
+  }, function(){ render(); });
+}
+
 function loadUI(){
   try {
     var raw = localStorage.getItem('mma_ui_v1');
@@ -410,7 +474,8 @@ function renderApp(){
 
   var syncBody = syncOpen ? (
     '<div class="sync-body">'+
-      '<div class="sync-hint">En el dispositivo con el progreso más reciente, copia el código. En el otro dispositivo, pégalo e impórtalo — se combinan los dos progresos, nada se borra.</div>'+
+      '<div class="sync-hint" style="color:'+(sb?'var(--success)':'var(--muted)')+'">'+(sb ? '🟢 Sincronización automática activa — el progreso se comparte solo entre dispositivos.' : '⚪ Sincronización automática no configurada — rellena SUPABASE_URL/KEY en el código, o usa copiar/pegar abajo mientras tanto.')+'</div>'+
+      '<div class="sync-hint">Copiar/pegar manual (funciona siempre, incluso sin configurar lo automático): en el dispositivo con el progreso más reciente, copia el código; en el otro, pégalo e impórtalo — se combinan los dos progresos, nada se borra.</div>'+
       '<button class="sync-btn" type="button" id="syncCopyBtn">📋 Copiar mi progreso</button>'+
       '<textarea id="syncOut" readonly>'+escapeHtml(encodeState(state))+'</textarea>'+
       '<textarea id="syncIn" placeholder="Pega aquí el código del otro dispositivo"></textarea>'+
@@ -453,6 +518,7 @@ function toggle(dayKey, itemId){
   if (!state.weeks[weekKey][dayKey]) state.weeks[weekKey][dayKey] = {};
   state.weeks[weekKey][dayKey][itemId] = !state.weeks[weekKey][dayKey][itemId];
   saveState();
+  sbPush();
   render();
 }
 
@@ -494,6 +560,7 @@ appEl.addEventListener('click', function(e){
     if (!decoded){ flashStatus('Código inválido'); render(); return; }
     state = mergeStates(state, decoded);
     saveState();
+    sbPush();
     flashStatus('Progreso combinado ✓');
     render();
     return;
@@ -529,7 +596,7 @@ document.getElementById('modalBackdrop').addEventListener('click', function(e){
   if (e.target.id === 'modalBackdrop') closeVideo();
 });
 
-render();
+if (sb) { sbInit(); } else { render(); }
 </script>
 </body>
 </html>
